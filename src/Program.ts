@@ -1,10 +1,10 @@
 type Program = {
-  type: 'root';
+  type: 'block';
   stmts: Stmt[];
 };
 
 type Stmt =
-  | { type: 'root'; stmts: Stmt[] }
+  | { type: 'block'; stmts: Stmt[] }
   | { type: 'hole' }
   | {
       type: 'command0';
@@ -36,7 +36,7 @@ const stmtToString = (stmt: Stmt, indentNum: number = 0): string => {
   const indent = '  '.repeat(indentNum);
 
   switch (stmt.type) {
-    case 'root':
+    case 'block':
       return (
         indent +
         stmt.stmts.map((stmt) => stmtToString(stmt, indentNum)).join('\n')
@@ -58,7 +58,7 @@ ${indent}]`;
 };
 
 const HELLO_WORLD: Program = {
-  type: 'root',
+  type: 'block',
   stmts: [
     {
       type: 'repeat',
@@ -76,7 +76,7 @@ const HELLO_WORLD: Program = {
 
 // From <https://www.transum.org/Software/Logo/Level2/?Level=3>
 const FLOWER: Program = {
-  type: 'root',
+  type: 'block',
   stmts: [
     {
       type: 'repeat',

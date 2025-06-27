@@ -27,10 +27,9 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
 
   let value: any;
   switch (stmt.type) {
-    case 'root':
+    case 'block':
       value = (
         <>
-          Start
           {stmt.stmts.map((s, i) => (
             <Block
               stmt={s}
