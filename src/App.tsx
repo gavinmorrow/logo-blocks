@@ -2,9 +2,10 @@ import Editor from './Editor';
 import './App.css';
 import { FLOWER, HELLO_WORLD } from './Program';
 import run from './run';
+import { useState } from 'react';
 
 const App = () => {
-  let program = FLOWER;
+  const [program, setProgram] = useState(HELLO_WORLD);
 
   return (
     <>
@@ -15,7 +16,7 @@ const App = () => {
       >
         Run
       </button>
-      <Editor program={program} />
+      <Editor {...{ program, setProgram }} />
       <canvas id="canvas" width={500} height={500} />
     </>
   );

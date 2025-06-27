@@ -1,14 +1,11 @@
 import Block from './Block';
 import { Program } from './Program';
 
-type EditorProps = { program: Program };
-const Editor = ({ program }: EditorProps) => {
+type EditorProps = { program: Program; setProgram: (program: Program) => void };
+const Editor = ({ program, setProgram }: EditorProps) => {
   return (
     <div>
-      Start
-      {program.stmts.map((stmt) => (
-        <Block stmt={stmt} />
-      ))}
+      <Block stmt={program} setStmt={setProgram} />
     </div>
   );
 };
