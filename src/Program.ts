@@ -18,13 +18,13 @@ type Stmt =
   | {
       type: 'repeat';
       count: number;
-      stmts: Stmt[];
+      stmts: Program;
     }
   | {
       type: 'func';
       name: string;
       params: string[];
-      stmts: Stmt[];
+      stmts: Program;
     }
   | {
       type: 'call';
@@ -49,7 +49,7 @@ const stmtToString = (stmt: Stmt, indentNum: number = 0): string => {
       return indent + `${stmt.name} ${stmt.value}`;
     case 'repeat':
       return `${indent}repeat ${stmt.count} [
-${stmt.stmts.map((stmt) => stmtToString(stmt, indentNum + 1)).join('\n')}
+${stmtToString(stmt.stmts, indentNum + 1)}
 ${indent}]`;
     case 'func':
     case 'call':
@@ -63,10 +63,13 @@ const HELLO_WORLD: Program = {
     {
       type: 'repeat',
       count: 4,
-      stmts: [
-        { type: 'command1', name: 'fd', value: 50 },
-        { type: 'command1', name: 'lt', value: 90 },
-      ],
+      stmts: {
+        type: 'block',
+        stmts: [
+          { type: 'command1', name: 'fd', value: 50 },
+          { type: 'command1', name: 'lt', value: 90 },
+        ],
+      },
     },
     {
       type: 'hole',
@@ -81,28 +84,37 @@ const FLOWER: Program = {
     {
       type: 'repeat',
       count: 8,
-      stmts: [
-        {
-          type: 'command1',
-          name: 'rt',
-          value: 45,
-        },
-        {
-          type: 'repeat',
-          count: 6,
-          stmts: [
-            {
-              type: 'repeat',
-              count: 90,
+      stmts: {
+        type: 'block',
+        stmts: [
+          {
+            type: 'command1',
+            name: 'rt',
+            value: 45,
+          },
+          {
+            type: 'repeat',
+            count: 6,
+            stmts: {
+              type: 'block',
               stmts: [
-                { type: 'command1', name: 'fd', value: 2 },
-                { type: 'command1', name: 'rt', value: 2 },
+                {
+                  type: 'repeat',
+                  count: 90,
+                  stmts: {
+                    type: 'block',
+                    stmts: [
+                      { type: 'command1', name: 'fd', value: 2 },
+                      { type: 'command1', name: 'rt', value: 2 },
+                    ],
+                  },
+                },
+                { type: 'command1', name: 'rt', value: 90 },
               ],
             },
-            { type: 'command1', name: 'rt', value: 90 },
-          ],
-        },
-      ],
+          },
+        ],
+      },
     },
   ],
 };

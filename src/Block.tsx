@@ -1,4 +1,4 @@
-import { DragEventHandler } from 'react';
+import { DragEventHandler, useState } from 'react';
 import './Block.css';
 import { stmtToString, Stmt } from './Program';
 
@@ -44,14 +44,14 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
       );
       break;
     case 'hole':
+      let [backgroundColor, setBgColor] = useState('');
       value = (
         <div
           onDrop={onDrop}
-          onDragEnter={(e) =>
-            (e.target.style.backgroundColor = 'lightgoldenrodyellow')
-          }
-          onDragExit={(e) => (e.target.style.backgroundColor = 'transparent')}
+          onDragEnter={() => setBgColor('lightgoldenrodyellow')}
+          onDragExit={() => setBgColor('')}
           onDragOver={(e) => e.preventDefault()}
+          style={{ backgroundColor }}
         >
           ...
         </div>
@@ -68,16 +68,19 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
         <>
           {' '}
           {'repeat'} {stmt.count}{' '}
-          {stmt.stmts.map((s, i) => (
-            <Block
-              stmt={s}
-              setStmt={(newS) => {
-                let newStmt = structuredClone(stmt);
-                newStmt.stmts[i] = newS;
-                setStmt(newStmt);
-              }}
-            />
-          ))}
+          <Block
+            stmt={stmt.stmts}
+            setStmt={(newS) => {
+              const newStmt = structuredClone(stmt);
+
+              if (newS.type != 'block') {
+                throw new Error(`Invalid stmt type: ${newS}`);
+              }
+              newStmt.stmts = newS;
+
+              setStmt(newStmt);
+            }}
+          />
         </>
       );
       break;

@@ -11,7 +11,7 @@ const App = () => {
     <>
       <button
         onClick={() =>
-          run(program.stmts, { pd: true, x: 250, y: 250, r: 0 }, 0, true)
+          run(program, { pd: true, x: 250, y: 250, r: 0 }, 0, true)
         }
       >
         Run
