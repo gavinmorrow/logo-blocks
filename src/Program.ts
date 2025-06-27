@@ -29,6 +29,24 @@ type Stmt =
       params: number[];
     };
 
+const stmtToString = (stmt: Stmt, indentNum: number = 0): string => {
+  const indent = '  '.repeat(indentNum);
+
+  switch (stmt.type) {
+    case 'command0':
+      return indent + stmt.name;
+    case 'command1':
+      return indent + `${stmt.name} ${stmt.value}`;
+    case 'repeat':
+      return `${indent}repeat ${stmt.count} [
+${stmt.stmts.map((stmt) => stmtToString(stmt, indentNum + 1)).join('\n')}
+${indent}]`;
+    case 'func':
+    case 'call':
+      return indent + 'todo: ${stmt}';
+  }
+};
+
 const HELLO_WORLD: Program = {
   stmts: [
     {
@@ -74,4 +92,4 @@ const FLOWER: Program = {
   ],
 };
 
-export { Program, Stmt, HELLO_WORLD, FLOWER };
+export { Program, Stmt, stmtToString, HELLO_WORLD, FLOWER };
