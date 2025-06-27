@@ -1,10 +1,11 @@
 import Block from './Block';
-import { HELLO_WORLD } from './Program';
+import { Program } from './Program';
 
-const Editor = () => {
+type EditorProps = { program: Program };
+const Editor = ({ program }: EditorProps) => {
   return (
     <>
-      {HELLO_WORLD.stmts.map((stmt) => (
+      {program.stmts.map((stmt) => (
         <Block stmt={stmt} />
       ))}
     </>

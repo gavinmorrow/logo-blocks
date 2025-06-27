@@ -9,7 +9,7 @@ type Stmt =
     }
   | {
       type: 'command1';
-      name: 'fw' | 'bk' | 'lt' | 'rt';
+      name: 'fd' | 'bk' | 'lt' | 'rt';
       value: number;
     }
   | {
@@ -35,11 +35,43 @@ const HELLO_WORLD: Program = {
       type: 'repeat',
       count: 4,
       stmts: [
-        { type: 'command1', name: 'fw', value: 10 },
+        { type: 'command1', name: 'fd', value: 50 },
         { type: 'command1', name: 'lt', value: 90 },
       ],
     },
   ],
 };
 
-export { Program, Stmt, HELLO_WORLD };
+// From <https://www.transum.org/Software/Logo/Level2/?Level=3>
+const FLOWER: Program = {
+  stmts: [
+    {
+      type: 'repeat',
+      count: 8,
+      stmts: [
+        {
+          type: 'command1',
+          name: 'rt',
+          value: 45,
+        },
+        {
+          type: 'repeat',
+          count: 6,
+          stmts: [
+            {
+              type: 'repeat',
+              count: 90,
+              stmts: [
+                { type: 'command1', name: 'fd', value: 2 },
+                { type: 'command1', name: 'rt', value: 2 },
+              ],
+            },
+            { type: 'command1', name: 'rt', value: 90 },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export { Program, Stmt, HELLO_WORLD, FLOWER };
