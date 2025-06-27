@@ -1,0 +1,17 @@
+.editor {
+  display: flex;
+  flex-direction: row;
+
+  & #library {
+    width: 10em;
+    color: grey;
+
+    * {
+      border-color: grey;
+    }
+  }
+
+  & > .block {
+    flex-grow: 1;
+  }
+}

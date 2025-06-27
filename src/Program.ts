@@ -54,6 +54,46 @@ ${indent}]`;
   }
 };
 
+const ALL_BLOCKS: Stmt[] = [
+  {
+    type: 'command0',
+    name: 'pu',
+  },
+
+  {
+    type: 'command0',
+    name: 'pd',
+  },
+  {
+    type: 'command1',
+    name: 'fd',
+    value: 10,
+  },
+  {
+    type: 'command1',
+    name: 'bk',
+    value: 10,
+  },
+  {
+    type: 'command1',
+    name: 'lt',
+    value: 10,
+  },
+  {
+    type: 'command1',
+    name: 'rt',
+    value: 10,
+  },
+  {
+    type: 'repeat',
+    count: 3,
+    stmts: {
+      type: 'block',
+      stmts: [],
+    },
+  },
+];
+
 const HELLO_WORLD: Program = {
   type: 'block',
   stmts: [
@@ -113,4 +153,4 @@ const FLOWER: Program = {
   ],
 };
 
-export { Program, Stmt, stmtToString, HELLO_WORLD, FLOWER };
+export { Program, Stmt, stmtToString, ALL_BLOCKS, HELLO_WORLD, FLOWER };
