@@ -34,8 +34,15 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
             <Block
               stmt={s}
               setStmt={(newS) => {
-                let newStmt = structuredClone(stmt);
+                const oldS = stmt.stmts[i];
+                const newStmt = structuredClone(stmt);
+
+                if (oldS.type == 'hole') {
+                  // Duplicate so the hole remains
+                  newStmt.stmts.splice(i, 0, oldS);
+                }
                 newStmt.stmts[i] = newS;
+
                 setStmt(newStmt);
               }}
             />
