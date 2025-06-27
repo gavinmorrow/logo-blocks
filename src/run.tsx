@@ -7,7 +7,12 @@ type Turtle = {
   r: number;
 };
 
-const run = async (stmts: Stmt[], t: Turtle, clear: boolean = false) => {
+const run = async (
+  stmts: Stmt[],
+  t: Turtle,
+  delay: number = 1,
+  clear: boolean = false,
+) => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
   const ctx = canvas.getContext('2d');
 
@@ -76,7 +81,7 @@ const run = async (stmts: Stmt[], t: Turtle, clear: boolean = false) => {
       }
     }
 
-    // await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, delay));
   }
 };
 
