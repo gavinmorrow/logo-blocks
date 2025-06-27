@@ -3,12 +3,14 @@ import './Block.css';
 import { stmtToString, Stmt } from './Program';
 
 type BlockProps = {
-  stmt: Stmt;
+  stmt: Stmt | { type: 'hole' };
   setStmt: (stmt: Stmt) => void;
 };
 
 const Block = ({ stmt, setStmt }: BlockProps) => {
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
+    if (stmt.type == 'hole') return;
+
     event.dataTransfer.dropEffect = 'move';
 
     event.dataTransfer.setData(
@@ -34,19 +36,20 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
             <Block
               stmt={s}
               setStmt={(newS) => {
-                const oldS = stmt.stmts[i];
                 const newStmt = structuredClone(stmt);
-
-                if (oldS.type == 'hole') {
-                  // Duplicate so the hole remains
-                  newStmt.stmts.splice(i, 0, oldS);
-                }
                 newStmt.stmts[i] = newS;
-
                 setStmt(newStmt);
               }}
             />
           ))}
+          <Block
+            stmt={{ type: 'hole' }}
+            setStmt={(newS) => {
+              const newStmt = structuredClone(stmt);
+              newStmt.stmts.push(newS);
+              setStmt(newStmt);
+            }}
+          />
         </>
       );
       break;

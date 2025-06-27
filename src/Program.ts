@@ -5,7 +5,6 @@ type Program = {
 
 type Stmt =
   | { type: 'block'; stmts: Stmt[] }
-  | { type: 'hole' }
   | {
       type: 'command0';
       name: 'pu' | 'pd';
@@ -41,8 +40,6 @@ const stmtToString = (stmt: Stmt, indentNum: number = 0): string => {
         indent +
         stmt.stmts.map((stmt) => stmtToString(stmt, indentNum)).join('\n')
       );
-    case 'hole':
-      return indent + '<HOLE>';
     case 'command0':
       return indent + stmt.name;
     case 'command1':
@@ -70,9 +67,6 @@ const HELLO_WORLD: Program = {
           { type: 'command1', name: 'lt', value: 90 },
         ],
       },
-    },
-    {
-      type: 'hole',
     },
   ],
 };
