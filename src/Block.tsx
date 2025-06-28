@@ -48,10 +48,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     event.stopPropagation();
   };
   const onDragEnd: DragEventHandler<HTMLDivElement> = (event) => {
-    if (event.dataTransfer.dropEffect == 'move') {
-      // The drop wasn't completed.
-      delStmt();
-    }
+    if (event.dataTransfer.dropEffect == 'move') delStmt();
     event.stopPropagation();
   };
 
