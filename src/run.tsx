@@ -33,8 +33,10 @@ const run = async (
       switch (stmt.name) {
         case 'pu':
           t.pd = false;
+          break;
         case 'pd':
           t.pd = true;
+          break;
       }
       break;
     }
