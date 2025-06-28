@@ -16,7 +16,6 @@ export const ParamInput = ({ value, setValue }: ParamInputProps) => {
 
     let val = e.target.value;
     setTmpVal(val);
-    console.log(val);
 
     let newValue = Number(val);
     if (isNaN(newValue)) return;
