@@ -3,3 +3,13 @@
   padding: 0 0.25em;
   border: 2px solid black;
 }
+
+input:not(:hover, :focus) {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    display: none;
+  }
+  & {
+    appearance: textfield;
+  }
+}
