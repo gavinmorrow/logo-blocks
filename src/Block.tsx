@@ -1,7 +1,8 @@
-import { DragEventHandler, useState } from 'react';
+import { DragEventHandler, DragEvent, useState } from 'react';
 import './Block.css';
 import { stmtToString, Stmt } from './Program';
 import { ParamInput } from './ParamInput';
+import stopPropogation from './stopPropogation';
 
 const updateProp =
   <P,>(setProp: (newProp: P) => void) =>
@@ -44,8 +45,6 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     // Don't do this b/c of dropping into inputs, which is very annoying
     // event.dataTransfer.setData('application/json', JSON.stringify(stmt));
     // event.dataTransfer.setData('text/plain', stmtToString(stmt));
-
-    event.stopPropagation();
   };
   const onDragEnd: DragEventHandler<HTMLDivElement> = (event) => {
     if (event.dataTransfer.dropEffect == 'move') delStmt();
@@ -55,25 +54,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
   let value: any;
   switch (stmt.type) {
     case 'hole': {
-      let [backgroundColor, setBgColor] = useState('');
-
-      const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
-        const data = event.dataTransfer.getData('application/logo-blocks.stmt');
-        setStmt(JSON.parse(data));
-        setBgColor('');
-      };
-
-      value = (
-        <div
-          onDrop={onDrop}
-          onDragEnter={() => setBgColor('lightgoldenrodyellow')}
-          onDragExit={() => setBgColor('')}
-          onDragOver={(e) => e.preventDefault()}
-          style={{ backgroundColor }}
-        >
-          ...
-        </div>
-      );
+      value = <>...</>;
       break;
     }
     case 'block':
@@ -81,6 +62,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
         <>
           {stmt.stmts.map((s, i) => (
             <Block
+              key={String(i) + stmtToString(stmt)}
               stmt={s}
               setStmt={updateStmt(
                 stmt,
@@ -150,12 +132,27 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     }
   }
 
+  let [backgroundColor, setBgColor] = useState('');
+
+  const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
+    const data = event.dataTransfer.getData('application/logo-blocks.stmt');
+    setStmt(JSON.parse(data));
+    setBgColor('');
+
+    event.stopPropagation();
+  };
+
   return (
     <div
       className="block"
       draggable={stmt.type != 'hole'}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
+      onDrop={onDrop}
+      onDragEnter={stopPropogation(() => setBgColor('lightgoldenrodyellow'))}
+      onDragExit={stopPropogation(() => setBgColor(''))}
+      onDragOver={stopPropogation((e) => e.preventDefault())}
+      style={{ backgroundColor }}
     >
       {value}
     </div>
