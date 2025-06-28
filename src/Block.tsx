@@ -138,6 +138,16 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     case 'call':
       value = 'unknown';
       break;
+    case 'def': {
+      value = (
+        <>
+          make{' '}
+          <ParamInput value={stmt.name} setValue={updateStmt(stmt, 'name')} />{' '}
+          <ParamInput value={stmt.value} setValue={updateStmt(stmt, 'value')} />
+        </>
+      );
+      break;
+    }
   }
 
   return (

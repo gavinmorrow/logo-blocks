@@ -7,6 +7,9 @@ type Turtle = {
   r: number;
 };
 
+let vars: { [name: string]: number } = {};
+const resolve = (value: keyof typeof vars | number): number =>
+  typeof value == 'number' ? value : vars[value];
 const run = async (
   stmt: Stmt,
   t: Turtle,
@@ -44,7 +47,7 @@ const run = async (
     case 'command1': {
       const sin = Math.sin;
       const pi = Math.PI;
-      const d = stmt.value;
+      const d: number = resolve(stmt.value);
 
       const move = (dx: number, dy: number) => {
         const fn = t.pd ? ctx.lineTo : ctx.moveTo;
@@ -68,16 +71,16 @@ const run = async (
           move(-d * sin(pi / 2 - t.r), -d * sin(t.r));
           break;
         case 'lt':
-          rotate(-stmt.value);
+          rotate(-d);
           break;
         case 'rt':
-          rotate(stmt.value);
+          rotate(d);
           break;
       }
       break;
     }
     case 'repeat': {
-      for (let i = 0; i < stmt.count; i++) {
+      for (let i = 0; i < resolve(stmt.count); i++) {
         await run(stmt.stmts, t, delay);
       }
     }
@@ -86,6 +89,9 @@ const run = async (
     }
     case 'call': {
       break;
+    }
+    case 'def': {
+      vars[stmt.name] = resolve(stmt.value);
     }
   }
 

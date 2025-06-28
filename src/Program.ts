@@ -3,6 +3,7 @@ type Program = {
   stmts: Stmt[];
 };
 
+type Value = number | string;
 type Stmt =
   | { type: 'block'; stmts: Stmt[] }
   | {
@@ -12,11 +13,11 @@ type Stmt =
   | {
       type: 'command1';
       name: 'fd' | 'bk' | 'lt' | 'rt';
-      value: number;
+      value: Value;
     }
   | {
       type: 'repeat';
-      count: number;
+      count: Value;
       stmts: Program;
     }
   | {
@@ -28,7 +29,12 @@ type Stmt =
   | {
       type: 'call';
       target: string;
-      params: number[];
+      params: Value[];
+    }
+  | {
+      type: 'def';
+      name: string;
+      value: Value;
     };
 
 const stmtToString = (stmt: Stmt, indentNum: number = 0): string => {
@@ -51,6 +57,8 @@ ${indent}]`;
     case 'func':
     case 'call':
       return indent + 'todo: ${stmt}';
+    case 'def':
+      return indent + `make "${stmt.name} ${stmt.value}`;
   }
 };
 
@@ -91,6 +99,11 @@ const ALL_BLOCKS: Stmt[] = [
       type: 'block',
       stmts: [],
     },
+  },
+  {
+    type: 'def',
+    name: 'name',
+    value: 0,
   },
 ];
 

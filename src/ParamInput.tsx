@@ -2,43 +2,37 @@ import './ParamInput.css';
 import { ChangeEventHandler, useState } from 'react';
 
 type ParamInputProps = {
-  value: number;
-  setValue: (newValue: number) => void;
+  value: string | number;
+  setValue: (newValue: string | number) => void;
 };
 export const ParamInput = ({ value, setValue }: ParamInputProps) => {
-  const [tmpVal, setTmpVal] = useState(String(value));
-
-  // lowk idk exactly why this works but it does have the desired behavior so.
-  // have fun fixing it!
-
+  const [tmp, setTmp] = useState(
+    typeof value == 'string' ? ':' + value : value,
+  );
+  const [width, setWidth] = useState(String(tmp).length);
   const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (!e.target.validity.valid) return;
+    const value = e.target.value;
+    setWidth(value.length);
+    setTmp(value);
 
-    let val = e.target.value;
-    setTmpVal(val);
-
-    let newValue = Number(val);
-    if (isNaN(newValue)) return;
-
-    if (val !== '') setTmpVal(String(newValue));
-    setValue(newValue);
-  };
-
-  const onBlur = () => {
-    let newValue = Number(tmpVal);
-    if (isNaN(newValue)) newValue = value;
-
-    setTmpVal(String(newValue));
-    setValue(newValue);
+    if (value[0] == ':') {
+      // variable
+      setValue(value.substring(1));
+    } else {
+      setValue(Number(value));
+    }
   };
 
   return (
     <input
-      type="number"
-      value={tmpVal}
+      type="text"
+      value={tmp ?? ''}
       onChange={onChange}
-      onBlur={onBlur}
-      style={{ border: 'none', fontFamily: 'monospace', width: '5.5ch' }}
+      style={{
+        border: 'none',
+        fontFamily: 'monospace',
+        width: `${width}ch`,
+      }}
     />
   );
 };
