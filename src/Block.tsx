@@ -5,9 +5,10 @@ import { stmtToString, Stmt } from './Program';
 type BlockProps = {
   stmt: Stmt | { type: 'hole' };
   setStmt: (stmt: Stmt) => void;
+  delStmt: () => void;
 };
 
-const Block = ({ stmt, setStmt }: BlockProps) => {
+const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
     if (stmt.type == 'hole') return;
 
@@ -22,13 +23,38 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
 
     event.stopPropagation();
   };
-  const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
-    const data = event.dataTransfer.getData('application/logo-blocks.stmt');
-    setStmt(JSON.parse(data));
+  const onDragEnd: DragEventHandler<HTMLDivElement> = (event) => {
+    if (event.dataTransfer.dropEffect != 'none') {
+      // The drop wasn't completed.
+      delStmt();
+    }
+    event.stopPropagation();
   };
 
   let value: any;
   switch (stmt.type) {
+    case 'hole': {
+      let [backgroundColor, setBgColor] = useState('');
+
+      const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
+        const data = event.dataTransfer.getData('application/logo-blocks.stmt');
+        setStmt(JSON.parse(data));
+        setBgColor('');
+      };
+
+      value = (
+        <div
+          onDrop={onDrop}
+          onDragEnter={() => setBgColor('lightgoldenrodyellow')}
+          onDragExit={() => setBgColor('')}
+          onDragOver={(e) => e.preventDefault()}
+          style={{ backgroundColor }}
+        >
+          ...
+        </div>
+      );
+      break;
+    }
     case 'block':
       value = (
         <>
@@ -40,6 +66,11 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
                 newStmt.stmts[i] = newS;
                 setStmt(newStmt);
               }}
+              delStmt={() => {
+                const newStmt = structuredClone(stmt);
+                newStmt.stmts.splice(i, 1);
+                setStmt(newStmt);
+              }}
             />
           ))}
           <Block
@@ -49,22 +80,9 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
               newStmt.stmts.push(newS);
               setStmt(newStmt);
             }}
+            delStmt={() => {}}
           />
         </>
-      );
-      break;
-    case 'hole':
-      let [backgroundColor, setBgColor] = useState('');
-      value = (
-        <div
-          onDrop={onDrop}
-          onDragEnter={() => setBgColor('lightgoldenrodyellow')}
-          onDragExit={() => setBgColor('')}
-          onDragOver={(e) => e.preventDefault()}
-          style={{ backgroundColor }}
-        >
-          ...
-        </div>
       );
       break;
     case 'command0':
@@ -90,6 +108,11 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
 
               setStmt(newStmt);
             }}
+            delStmt={() => {
+              const newStmt = structuredClone(stmt);
+              newStmt.stmts = { type: 'block', stmts: [] };
+              setStmt(newStmt);
+            }}
           />
         </>
       );
@@ -101,7 +124,12 @@ const Block = ({ stmt, setStmt }: BlockProps) => {
   }
 
   return (
-    <div className="block" draggable="true" onDragStart={onDragStart}>
+    <div
+      className="block"
+      draggable="true"
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
       {value}
     </div>
   );
