@@ -140,7 +140,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
   return (
     <div
       className="block"
-      draggable="true"
+      draggable={stmt.type != 'hole'}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
