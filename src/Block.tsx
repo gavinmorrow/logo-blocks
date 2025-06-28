@@ -3,11 +3,25 @@ import './Block.css';
 import { stmtToString, Stmt } from './Program';
 import { ParamInput } from './ParamInput';
 
-const updateProp = (prop, setProp, setValue) => (newValue) => {
-  const newProp = structuredClone(prop);
-  setValue(newProp, newValue);
-  setProp(newProp);
-};
+const updateProp =
+  <P,>(setProp: (newProp: P) => void) =>
+  <
+    P1 extends P,
+    V extends K extends keyof P1 ? P1[K] : null,
+    K extends keyof P1 | ((newProp: P1, newValue: V) => void),
+  >(
+    prop: P1,
+    setValue: K,
+  ) =>
+  (newValue?: V) => {
+    const newProp = structuredClone(prop);
+    if (typeof setValue == 'function') {
+      setValue(newProp, newValue);
+    } else {
+      newProp[setValue as keyof P1] = newValue;
+    }
+    setProp(newProp);
+  };
 
 type BlockProps = {
   stmt: Stmt | { type: 'hole' };
@@ -16,6 +30,8 @@ type BlockProps = {
 };
 
 const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
+  const updateStmt = updateProp(setStmt);
+
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
     if (stmt.type == 'hole') return;
 
@@ -69,25 +85,16 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
           {stmt.stmts.map((s, i) => (
             <Block
               stmt={s}
-              setStmt={(newS) => {
-                const newStmt = structuredClone(stmt);
-                newStmt.stmts[i] = newS;
-                setStmt(newStmt);
-              }}
-              delStmt={() => {
-                const newStmt = structuredClone(stmt);
-                newStmt.stmts.splice(i, 1);
-                setStmt(newStmt);
-              }}
+              setStmt={updateStmt(
+                stmt,
+                (stmt, value) => (stmt.stmts[i] = value),
+              )}
+              delStmt={updateStmt(stmt, (stmt) => stmt.stmts.splice(i, 1))}
             />
           ))}
           <Block
             stmt={{ type: 'hole' }}
-            setStmt={(newS) => {
-              const newStmt = structuredClone(stmt);
-              newStmt.stmts.push(newS);
-              setStmt(newStmt);
-            }}
+            setStmt={updateStmt(stmt, (stmt, value) => stmt.stmts.push(value))}
             delStmt={() => {}}
           />
         </>
@@ -98,45 +105,27 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
       break;
     }
     case 'command1': {
-      const setVal = (newVal: number) => {
-        const newStmt = structuredClone(stmt);
-        newStmt.value = newVal;
-        setStmt(newStmt);
-      };
       value = (
         <>
-          {stmt.name} <ParamInput value={stmt.value} setValue={setVal} />
+          {stmt.name}{' '}
+          <ParamInput value={stmt.value} setValue={updateStmt(stmt, 'value')} />
         </>
       );
       break;
     }
     case 'repeat': {
-      const setCount = (newCount: number) => {
-        const newStmt = structuredClone(stmt);
-        newStmt.count = newCount;
-        setStmt(newStmt);
-      };
       value = (
         <>
           {' '}
-          {'repeat'} <ParamInput value={stmt.count} setValue={setCount} />
+          {'repeat'}{' '}
+          <ParamInput value={stmt.count} setValue={updateStmt(stmt, 'count')} />
           <Block
             stmt={stmt.stmts}
-            setStmt={(newS) => {
-              const newStmt = structuredClone(stmt);
-
-              if (newS.type != 'block') {
-                throw new Error(`Invalid stmt type: ${newS}`);
-              }
-              newStmt.stmts = newS;
-
-              setStmt(newStmt);
-            }}
-            delStmt={() => {
-              const newStmt = structuredClone(stmt);
-              newStmt.stmts = { type: 'block', stmts: [] };
-              setStmt(newStmt);
-            }}
+            setStmt={updateStmt(stmt, 'stmts')}
+            delStmt={updateStmt(
+              stmt,
+              (stmt) => (stmt.stmts = { type: 'block', stmts: [] }),
+            )}
           />
         </>
       );
