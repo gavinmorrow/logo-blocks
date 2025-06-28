@@ -10,7 +10,7 @@ type Turtle = {
 const run = async (
   stmt: Stmt,
   t: Turtle,
-  delay: number = 1,
+  delay: number,
   clear: boolean = false,
 ) => {
   const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -78,7 +78,7 @@ const run = async (
     }
     case 'repeat': {
       for (let i = 0; i < stmt.count; i++) {
-        await run(stmt.stmts, t);
+        await run(stmt.stmts, t, delay);
       }
     }
     case 'func': {
