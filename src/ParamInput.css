@@ -1,0 +1,9 @@
+input:not(:hover, :focus) {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    display: none;
+  }
+  & {
+    appearance: textfield;
+  }
+}

@@ -1,30 +1,12 @@
 import { DragEventHandler, useState } from 'react';
 import './Block.css';
 import { stmtToString, Stmt } from './Program';
+import { ParamInput } from './ParamInput';
 
 const updateProp = (prop, setProp, setValue) => (newValue) => {
   const newProp = structuredClone(prop);
   setValue(newProp, newValue);
   setProp(newProp);
-};
-
-const ParamInput = ({ value, setValue }) => {
-  const [tmpVal, setTmpVal] = useState(value);
-  const commitChange = () => {
-    let newValue = Number(setTmpVal);
-    if (isNaN(newValue)) newValue = value;
-
-    setTmpVal(newValue);
-    setValue(newValue);
-  };
-  return (
-    <input
-      type="number"
-      value={tmpVal}
-      onChange={(e) => setTmpVal(e.target.value)}
-      onBlur={commitChange}
-    />
-  );
 };
 
 type BlockProps = {
@@ -116,23 +98,14 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
       break;
     }
     case 'command1': {
-      const [tmpVal, setTmpVal] = useState(String(stmt.value));
       const setVal = (newVal: number) => {
-        setTmpVal(String(newVal));
         const newStmt = structuredClone(stmt);
         newStmt.value = newVal;
         setStmt(newStmt);
       };
       value = (
         <>
-          {stmt.name}{' '}
-          <input
-            type="number"
-            value={tmpVal}
-            onChange={(e) => setTmpVal(e.target.value)}
-            onBlur={(event) => setVal(Number(event.target.value))}
-            style={{ width: '5ch', border: 'none', fontFamily: 'monospace' }}
-          />
+          {stmt.name} <ParamInput value={stmt.value} setValue={setVal} />
         </>
       );
       break;
@@ -146,13 +119,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
       value = (
         <>
           {' '}
-          {'repeat'}{' '}
-          <input
-            type="number"
-            value={stmt.count}
-            onSubmit={(event) => setCount(Number(event.target.value))}
-            style={{ width: '5ch', border: 'none', fontFamily: 'monospace' }}
-          />
+          {'repeat'} <ParamInput value={stmt.count} setValue={setCount} />
           <Block
             stmt={stmt.stmts}
             setStmt={(newS) => {
