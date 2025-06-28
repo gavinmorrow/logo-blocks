@@ -1,6 +1,6 @@
 import Editor from './Editor';
 import './App.css';
-import { FLOWER, HELLO_WORLD } from './Program';
+import { FLOWER, HELLO_WORLD, stmtToString } from './Program';
 import run from './run';
 import { useState } from 'react';
 
@@ -15,6 +15,18 @@ const App = () => {
         }
       >
         Run
+      </button>
+      <button
+        onClick={() => navigator.clipboard.writeText(JSON.stringify(program))}
+      >
+        Export
+      </button>
+      <button
+        onClick={async () =>
+          setProgram(JSON.parse(await navigator.clipboard.readText()))
+        }
+      >
+        Import
       </button>
       <Editor {...{ program, setProgram }} />
       <canvas id="canvas" width={500} height={500} />
