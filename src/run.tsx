@@ -68,10 +68,10 @@ const run = async (
           move(-d * sin(pi / 2 - t.r), -d * sin(t.r));
           break;
         case 'lt':
-          rotate(stmt.value);
+          rotate(-stmt.value);
           break;
         case 'rt':
-          rotate(-stmt.value);
+          rotate(stmt.value);
           break;
       }
       break;
