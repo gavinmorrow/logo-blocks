@@ -91,7 +91,13 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
           ))}
           <Block
             stmt={{ type: 'hole' }}
-            setStmt={updateStmt(stmt, (stmt, value) => stmt.stmts.push(value))}
+            setStmt={updateStmt(stmt, (stmt, value) => {
+              if (value.type == 'block') {
+                stmt.stmts.push(...value.stmts);
+              } else {
+                stmt.stmts.push(value);
+              }
+            })}
             delStmt={() => {}}
           />
         </>
