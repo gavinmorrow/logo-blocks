@@ -66,17 +66,6 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     case 'block':
       value = (
         <>
-          {stmt.stmts.map((s, i) => (
-            <Block
-              key={String(i) + stmtToString(stmt)}
-              stmt={s}
-              setStmt={updateStmt(
-                stmt,
-                (stmt, value) => (stmt.stmts[i] = value),
-              )}
-              delStmt={updateStmt(stmt, (stmt) => stmt.stmts.splice(i, 1))}
-            />
-          ))}
           <Block
             stmt={{ type: 'hole' }}
             setStmt={updateStmt(stmt, (stmt, value) => {
@@ -88,6 +77,29 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
             })}
             delStmt={() => {}}
           />
+          {stmt.stmts.map((s, i) => [
+            <Block
+              key={String(i) + stmtToString(stmt).replace(/\d/g, '')}
+              stmt={s}
+              setStmt={updateStmt(
+                stmt,
+                (stmt, value) => (stmt.stmts[i] = value),
+              )}
+              delStmt={updateStmt(stmt, (stmt) => stmt.stmts.splice(i, 1))}
+            />,
+            <Block
+              key={String(i) + 'hole'}
+              stmt={{ type: 'hole' }}
+              setStmt={updateStmt(stmt, (stmt, value) => {
+                if (value.type == 'block') {
+                  stmt.stmts.push(...value.stmts);
+                } else {
+                  stmt.stmts.push(value);
+                }
+              })}
+              delStmt={() => {}}
+            />,
+          ])}
         </>
       );
       break;
@@ -151,7 +163,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
   return (
     <div
       className="block"
-      draggable={stmt.type != 'hole'}
+      draggable={true}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDrop={onDrop}
