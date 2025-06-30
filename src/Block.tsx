@@ -34,7 +34,11 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
   const updateStmt = updateProp(setStmt);
 
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
-    if (stmt.type == 'hole') return;
+    if (stmt.type == 'hole') {
+      event.preventDefault();
+      // Do *not* stop propogation.
+      return false;
+    }
 
     event.dataTransfer.dropEffect = 'move';
 
@@ -42,6 +46,8 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
       'application/logo-blocks.stmt',
       JSON.stringify(stmt),
     );
+
+    event.stopPropagation();
     // Don't do this b/c of dropping into inputs, which is very annoying
     // event.dataTransfer.setData('application/json', JSON.stringify(stmt));
     // event.dataTransfer.setData('text/plain', stmtToString(stmt));
