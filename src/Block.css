@@ -3,12 +3,11 @@
   border-radius: 0.5em;
 
   padding: 0.5em;
-  background-color: white;
 
   &.block-hole {
     border: none;
     padding: 0.25em;
-    background-color: transparent;
+    background-color: transparent !important;
 
     transition: padding 0.1s;
 
@@ -18,27 +17,44 @@
   }
 
   &.drag {
-    opacity: 0.5;
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    transition:
+      height 0.1s,
+      padding 0.1s;
   }
 
   &.block-block {
     padding-top: 0;
     padding-bottom: 0;
 
-    background-color: orange;
-    border-color: rgba(0, 0, 0, 0.5);
-  }
-
-  &.block-command0,
-  &.block-command1 {
-    background-color: lightgreen;
+    border-color: rgba(0, 0, 0, 0);
   }
 
   &.block-repeat {
-    background-color: lightblue;
+    padding-bottom: 0;
+  }
 
-    & .repeat-text {
-      margin-bottom: 0.25em;
+  &.transparent-bg.block-block {
+    padding: 0;
+  }
+
+  &:not(.transparent-bg) {
+    background-color: white;
+
+    &.block-block {
+      background-color: orange;
+      border-color: rgba(0, 0, 0, 0.5);
+    }
+
+    &.block-command0,
+    &.block-command1 {
+      background-color: lightgreen;
+    }
+
+    &.block-repeat {
+      background-color: lightblue;
     }
   }
 }

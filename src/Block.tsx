@@ -28,23 +28,34 @@ type BlockProps = {
   stmt: Stmt | { type: 'hole' };
   setStmt: (stmt: Stmt) => void;
   delStmt: () => void;
+  transparentBg?: boolean;
+  parentHover?: boolean;
 };
 
-const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
+const Block = ({
+  stmt,
+  setStmt,
+  delStmt,
+  transparentBg = false,
+  parentHover = false,
+}: BlockProps) => {
   const updateStmt = updateProp(setStmt);
 
   let [isDrag, setIsDrag] = useState(false);
+  let [isDrop, setIsDrop] = useState(false);
+  let hover = parentHover || isDrop;
+
+  let acceptsDrop = !transparentBg && stmt.type == 'hole';
 
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
     if (stmt.type == 'hole') {
       return;
     }
 
-    setIsDrag(true);
-
     event.dataTransfer.dropEffect = 'move';
     setTimeout(() => {
-      if (event.dataTransfer.dropEffect == 'move') delStmt();
+      setIsDrag(true);
+      setTimeout(delStmt, 42);
     }, 42);
 
     event.dataTransfer.setData(
@@ -83,6 +94,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
               }
             })}
             delStmt={() => {}}
+            parentHover={hover}
           />
           {stmt.stmts.map((s, i) => [
             <Block
@@ -93,6 +105,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
                 (stmt, value) => (stmt.stmts[i] = value),
               )}
               delStmt={updateStmt(stmt, (stmt) => stmt.stmts.splice(i, 1))}
+              parentHover={hover}
             />,
             <Block
               key={String(i) + 'hole'}
@@ -105,6 +118,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
                 }
               })}
               delStmt={() => {}}
+              parentHover={hover}
             />,
           ])}
         </>
@@ -145,6 +159,8 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
               stmt,
               (stmt) => (stmt.stmts = { type: 'block', stmts: [] }),
             )}
+            transparentBg={true}
+            parentHover={hover}
           />
         </>
       );
@@ -166,15 +182,12 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     }
   }
 
-  let [isDrop, setIsDrop] = useState(false);
   let backgroundColor =
-    isDrop && !isDrag
-      ? stmt.type == 'hole'
-        ? 'lightGoldenrodYellow'
-        : 'lightcoral'
-      : '';
+    (isDrop && !isDrag && acceptsDrop) || hover ? 'lightGoldenrodYellow' : '';
 
   const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
+    if (!acceptsDrop) return;
+
     const data = event.dataTransfer.getData('application/logo-blocks.stmt');
     setStmt(JSON.parse(data));
     setIsDrop(false);
@@ -184,14 +197,20 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
 
   return (
     <div
-      className={`block block-${stmt.type} ${isDrop ? 'drop' : ''} ${isDrag ? 'drag' : ''}`}
+      className={`block block-${stmt.type} ${isDrop ? 'drop' : ''} ${isDrag ? 'drag' : ''} ${transparentBg ? 'transparent-bg' : ''}`}
       draggable={true}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDrop={onDrop}
-      onDragEnter={stopPropogation(() => setIsDrop(true))}
-      onDragExit={stopPropogation(() => setIsDrop(false))}
-      onDragOver={stopPropogation((e) => !isDrag && e.preventDefault())}
+      onDragEnter={(e) =>
+        acceptsDrop && stopPropogation(() => setIsDrop(true))(e)
+      }
+      onDragExit={(e) =>
+        acceptsDrop && stopPropogation(() => setIsDrop(false))(e)
+      }
+      onDragOver={(e) =>
+        acceptsDrop && stopPropogation((e) => !isDrag && e.preventDefault())(e)
+      }
       style={{ backgroundColor }}
     >
       {value}
