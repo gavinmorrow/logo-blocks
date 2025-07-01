@@ -1,5 +1,44 @@
 .block {
-  margin: 0.5em;
-  padding: 0 0.25em;
   border: 2px solid black;
+  border-radius: 0.5em;
+
+  padding: 0.5em;
+  background-color: white;
+
+  &.block-hole {
+    border: none;
+    padding: 0.25em;
+    background-color: transparent;
+
+    transition: padding 0.1s;
+
+    &.drop {
+      padding: 1em;
+    }
+  }
+
+  &.drag {
+    opacity: 0.5;
+  }
+
+  &.block-block {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    background-color: orange;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+
+  &.block-command0,
+  &.block-command1 {
+    background-color: lightgreen;
+  }
+
+  &.block-repeat {
+    background-color: lightblue;
+
+    & .repeat-text {
+      margin-bottom: 0.25em;
+    }
+  }
 }
