@@ -59,6 +59,12 @@ const App = () => {
       />
       <Editor {...{ program, setProgram }} />
       <canvas id="canvas" width={500} height={500} />
+      <p style={{ marginBottom: 0 }}>
+        This project's source code is available on GitHub!{' '}
+        <a href="https://github.com/gavinmorrow/logo-blocks/">
+          @gavinmorrow/logo-blocks
+        </a>
+      </p>
     </>
   );
 };
