@@ -25,7 +25,7 @@ const updateProp =
   };
 
 type BlockProps = {
-  stmt: Stmt | { type: 'hole' };
+  stmt: Stmt | { type: 'hole' } | { type: 'trash' };
   setStmt: (stmt: Stmt) => void;
   delStmt: () => void;
   transparentBg?: boolean;
@@ -39,6 +39,22 @@ const Block = ({
   transparentBg = false,
   parentHover = false,
 }: BlockProps) => {
+  if (stmt.type == 'trash') {
+    let [drag, setDrag] = useState(false);
+    return (
+      <div
+        className="block"
+        onDragEnter={() => setDrag(true)}
+        onDragExit={() => setDrag(false)}
+        onDrop={() => setDrag(false)}
+        onDragOver={(e) => e.preventDefault()}
+        style={{ backgroundColor: drag ? 'lightcoral' : '', color: 'coral' }}
+      >
+        Remove
+      </div>
+    );
+  }
+
   const updateStmt = updateProp(setStmt);
 
   let [isDrag, setIsDrag] = useState(false);
