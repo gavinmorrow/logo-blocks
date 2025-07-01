@@ -8,11 +8,23 @@ const App = () => {
   const [delay, setDelay] = useState(100);
 
   const [program, setProgramRaw] = useState(FLOWER);
-  const setProgram = (program: Program) => {
-    if (program.type != 'block') {
-      program = { type: 'block', stmts: [program] };
+  const [undoLog, setUndoLog] = useState([]);
+  const setProgram = (newProgram: Program) => {
+    const newUndoLog = structuredClone(undoLog);
+    newUndoLog.push(program);
+    setUndoLog(newUndoLog);
+
+    if (newProgram.type != 'block') {
+      newProgram = { type: 'block', stmts: [newProgram] };
     }
-    setProgramRaw(program);
+    setProgramRaw(newProgram);
+  };
+
+  const undo = () => {
+    const newUndoLog = structuredClone(undoLog);
+    const oldProgram = newUndoLog.pop();
+    setProgramRaw(oldProgram);
+    setUndoLog(newUndoLog);
   };
 
   return (
@@ -24,6 +36,10 @@ const App = () => {
       >
         Run
       </button>
+      <button onClick={undo} disabled={undoLog.length === 0}>
+        Undo
+      </button>
+      {/* <button onClick={redo}>Redo</button> */}
       <button
         onClick={() => navigator.clipboard.writeText(JSON.stringify(program))}
       >
