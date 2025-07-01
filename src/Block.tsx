@@ -96,8 +96,9 @@ const Block = ({
       break;
     }
     case 'block':
+      const dbg = (x) => (console.log(x), x);
       const genKey = (i: number, stmt: Stmt) =>
-        String(i) + stmtToString(stmt).replace(/[\d\W]/g, '');
+        String(i) + stmtToString(stmt).replace(/(\:(\w*))|[\d\W]/g, '');
       value = (
         <>
           <Block

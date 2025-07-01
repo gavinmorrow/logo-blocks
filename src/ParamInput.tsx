@@ -18,6 +18,8 @@ export const ParamInput = ({ value, setValue }: ParamInputProps) => {
     if (value[0] == ':') {
       // variable
       setValue(value.substring(1));
+    } else if (isNaN(Number(value))) {
+      setValue(value);
     } else {
       setValue(Number(value));
     }

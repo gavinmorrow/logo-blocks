@@ -58,7 +58,7 @@ ${indent}]`;
     case 'call':
       return indent + 'todo: ${stmt}';
     case 'def':
-      return indent + `make "${stmt.name} ${stmt.value}`;
+      return indent + `make :${stmt.name} ${stmt.value}`;
   }
 };
 
