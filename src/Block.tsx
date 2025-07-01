@@ -45,7 +45,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     event.dataTransfer.dropEffect = 'move';
     setTimeout(() => {
       if (event.dataTransfer.dropEffect == 'move') delStmt();
-    });
+    }, 42);
 
     event.dataTransfer.setData(
       'application/logo-blocks.stmt',
