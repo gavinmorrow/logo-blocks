@@ -1,4 +1,4 @@
-import { DragEventHandler, DragEvent, useState } from 'react';
+import { DragEventHandler, DragEvent, useState, useEffect } from 'react';
 import './Block.css';
 import { stmtToString, Stmt } from './Program';
 import { ParamInput } from './ParamInput';
@@ -33,6 +33,8 @@ type BlockProps = {
 const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
   const updateStmt = updateProp(setStmt);
 
+  let [isDrag, setIsDrag] = useState(false);
+
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
     if (stmt.type == 'hole') {
       event.preventDefault();
@@ -40,7 +42,12 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
       return false;
     }
 
+    setIsDrag(true);
+
     event.dataTransfer.dropEffect = 'move';
+    setTimeout(() => {
+      if (event.dataTransfer.dropEffect == 'move') delStmt();
+    });
 
     event.dataTransfer.setData(
       'application/logo-blocks.stmt',
@@ -53,33 +60,35 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     // event.dataTransfer.setData('text/plain', stmtToString(stmt));
   };
   const onDragEnd: DragEventHandler<HTMLDivElement> = (event) => {
-    if (event.dataTransfer.dropEffect == 'move') delStmt();
+    setIsDrag(false);
     event.stopPropagation();
   };
 
   let value: any;
   switch (stmt.type) {
     case 'hole': {
-      value = <>...</>;
+      value = <></>;
       break;
     }
     case 'block':
+      const genKey = (i: number, stmt: Stmt) =>
+        String(i) + stmtToString(stmt).replace(/[\d\W]/g, '');
       value = (
         <>
           <Block
             stmt={{ type: 'hole' }}
             setStmt={updateStmt(stmt, (stmt, value) => {
               if (value.type == 'block') {
-                stmt.stmts.push(...value.stmts);
+                stmt.stmts.unshift(...value.stmts);
               } else {
-                stmt.stmts.push(value);
+                stmt.stmts.unshift(value);
               }
             })}
             delStmt={() => {}}
           />
           {stmt.stmts.map((s, i) => [
             <Block
-              key={String(i) + stmtToString(stmt).replace(/\d/g, '')}
+              key={genKey(i, s)}
               stmt={s}
               setStmt={updateStmt(
                 stmt,
@@ -92,9 +101,9 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
               stmt={{ type: 'hole' }}
               setStmt={updateStmt(stmt, (stmt, value) => {
                 if (value.type == 'block') {
-                  stmt.stmts.push(...value.stmts);
+                  stmt.stmts.splice(i + 1, 0, ...value.stmts);
                 } else {
-                  stmt.stmts.push(value);
+                  stmt.stmts.splice(i + 1, 0, value);
                 }
               })}
               delStmt={() => {}}
@@ -119,12 +128,21 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     case 'repeat': {
       value = (
         <>
-          {' '}
-          {'repeat'}{' '}
-          <ParamInput value={stmt.count} setValue={updateStmt(stmt, 'count')} />
+          <div className="repeat-text">
+            {'repeat'}{' '}
+            <ParamInput
+              value={stmt.count}
+              setValue={updateStmt(stmt, 'count')}
+            />
+          </div>
           <Block
             stmt={stmt.stmts}
-            setStmt={updateStmt(stmt, 'stmts')}
+            setStmt={(newStmt) => {
+              if (newStmt.type != 'block') {
+                newStmt = { type: 'block', stmts: [newStmt] };
+              }
+              updateStmt(stmt, 'stmts')(newStmt);
+            }}
             delStmt={updateStmt(
               stmt,
               (stmt) => (stmt.stmts = { type: 'block', stmts: [] }),
@@ -150,26 +168,32 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
     }
   }
 
-  let [backgroundColor, setBgColor] = useState('');
+  let [isDrop, setIsDrop] = useState(false);
+  let backgroundColor =
+    isDrop && !isDrag
+      ? stmt.type == 'hole'
+        ? 'lightGoldenrodYellow'
+        : 'lightcoral'
+      : '';
 
   const onDrop: DragEventHandler<HTMLDivElement> = (event) => {
     const data = event.dataTransfer.getData('application/logo-blocks.stmt');
     setStmt(JSON.parse(data));
-    setBgColor('');
+    setIsDrop(false);
 
     event.stopPropagation();
   };
 
   return (
     <div
-      className="block"
+      className={`block block-${stmt.type} ${isDrop ? 'drop' : ''} ${isDrag ? 'drag' : ''}`}
       draggable={true}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onDrop={onDrop}
-      onDragEnter={stopPropogation(() => setBgColor('lightgoldenrodyellow'))}
-      onDragExit={stopPropogation(() => setBgColor(''))}
-      onDragOver={stopPropogation((e) => e.preventDefault())}
+      onDragEnter={stopPropogation(() => setIsDrop(true))}
+      onDragExit={stopPropogation(() => setIsDrop(false))}
+      onDragOver={stopPropogation((e) => !isDrag && e.preventDefault())}
       style={{ backgroundColor }}
     >
       {value}

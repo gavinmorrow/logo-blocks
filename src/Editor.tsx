@@ -8,7 +8,6 @@ const Editor = ({ program, setProgram }: EditorProps) => {
   return (
     <div className="editor">
       <div id="library">
-        <Block stmt={{ type: 'hole' }} setStmt={() => {}} delStmt={() => {}} />
         {ALL_BLOCKS.map((stmt, i) => (
           <Block
             key={String(i) + stmtToString(stmt)}
