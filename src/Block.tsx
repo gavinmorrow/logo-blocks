@@ -37,9 +37,7 @@ const Block = ({ stmt, setStmt, delStmt }: BlockProps) => {
 
   const onDragStart: DragEventHandler<HTMLDivElement> = (event) => {
     if (stmt.type == 'hole') {
-      event.preventDefault();
-      // Do *not* stop propogation.
-      return false;
+      return;
     }
 
     setIsDrag(true);
