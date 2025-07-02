@@ -77,6 +77,7 @@ const run = async (
           rotate(d);
           break;
       }
+      await new Promise((r) => setTimeout(r, 0));
       break;
     }
     case 'repeat': {
@@ -95,7 +96,7 @@ const run = async (
     }
   }
 
-  await new Promise((r) => setTimeout(r, delay));
+  if (delay != 0) await new Promise((r) => setTimeout(r, delay));
 };
 
 export default run;
