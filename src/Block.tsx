@@ -142,13 +142,24 @@ const Block = ({
       );
       break;
     case 'command0': {
-      value = stmt.name;
+      const prettyName = stmt.name == 'pu' ? 'pen up' : 'pen down';
+      value = prettyName;
       break;
     }
     case 'command1': {
+      const prettyName =
+        stmt.name == 'fd'
+          ? 'move forward'
+          : stmt.name == 'bk'
+            ? 'move backward'
+            : stmt.name == 'lt'
+              ? 'turn left'
+              : stmt.name == 'rt'
+                ? 'turn right'
+                : null; // unreachable
       value = (
         <>
-          {stmt.name}{' '}
+          {prettyName}{' '}
           <ParamInput value={stmt.value} setValue={updateStmt(stmt, 'value')} />
         </>
       );
