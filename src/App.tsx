@@ -31,7 +31,7 @@ const App = () => {
     <>
       <button
         onClick={() =>
-          run(program, { pd: true, x: 250, y: 250, r: 0 }, delay, true)
+          run(program, { pd: true, x: 100, y: 100, r: 0 }, delay, true)
         }
       >
         Run
